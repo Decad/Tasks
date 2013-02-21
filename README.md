@@ -28,7 +28,7 @@ List all tasks currently added.
 
 Gives a count of the number of tasks in the current file.
 
-## tasks rm <arg>
+### tasks rm <arg>
 
 Remove a completed task where arg is the number of the task as seen from `tasks list`
 
