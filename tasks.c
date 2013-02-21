@@ -7,6 +7,8 @@
 #include <limits.h>
 #include "lib/commander.h"
 
+static const int BUFFSIZE = 1024;
+
 static char*    find_root();
 static FILE*    get_root_file();
 static int      get_count();
@@ -33,7 +35,7 @@ static void add_task(command_t *self) {
 static void list(command_t *self){
     FILE *fp = get_root_file("r");
 
-    char buff[1024];
+    char buff[BUFFSIZE];
     int i = 0;
 
     while(fgets(buff, sizeof buff, fp) != NULL){
@@ -45,6 +47,31 @@ static void list(command_t *self){
 
 static void remove_task(command_t *self){
 
+    FILE *fp = get_root_file("r");
+
+    fseek(fp, 0, SEEK_END);
+    long size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    char *file = malloc(sizeof(char) * (size + 1));
+    char buff[BUFFSIZE];
+    int i = 0;
+
+    while(fgets(buff, sizeof buff, fp) != NULL){
+        if(i != (int)(*self->arg - '0')) {
+            strncat(file, buff, sizeof buff);
+        } else {
+            printf("%s %d\n", "Removed task", i);
+        }
+        i++;
+    }
+
+    fclose(fp);
+
+    FILE *fwp = get_root_file("w");
+    fprintf(fwp, "%s", file);
+    fclose(fwp);
+    free(file);
 }
 
 static void clear(command_t *self){
@@ -52,14 +79,18 @@ static void clear(command_t *self){
     fclose(fp);
 }
 
+static void count(command_t *self){
+    FILE *fp = get_root_file("r");
+    printf("%d\n", get_count(fp));
+    fclose(fp);
+}
+
 static int get_count(FILE *fp){
     int count = 0;
-    char buff[1024];
+    char buff[BUFFSIZE];
     while(fgets(buff, sizeof buff, fp) != NULL){
-        printf("%s\n", buff);
         count += 1;
     }
-    printf("%d\n", count);
     return count;
 }
 
@@ -126,6 +157,7 @@ int main(int argc, char *argv[])
     command_init    (&cmd, argv[0], "0.0.1");
     command_option  (&cmd, "init", "","Initilize tasks in folder", init);
     command_option  (&cmd, "list", "","List all tasks added", list);
+    command_option  (&cmd, "count", "","Counts number of tasks in .tasks", count);
     command_option  (&cmd, "add", "add <Task>", "Add task", add_task);
     command_option  (&cmd, "rm", "rm <Task>", "Remove task", remove_task);
     command_option  (&cmd, "clear", "", "Clear all tasks", clear);
