@@ -14,7 +14,7 @@ Before you can add any tasks you first have to initialise `tasks` with the comma
 in which all of your tasks get stored in a simple file format of 1 task per line. Once tasks has been initilised inside a folder any further commands from this folder or any sub folder will effect this `.tasks` file.
 `tasks` determins which `.tasks` file to edit but climbing up the current working directorys path until it encounters a `.tasks` file. This means that you can have sub `.tasks` files.
 
-### tasks add <arg>
+### tasks add \<arg\>
 
 Add a task to `tasks`, eg:
 
@@ -28,7 +28,7 @@ List all tasks currently added.
 
 Gives a count of the number of tasks in the current file.
 
-### tasks rm <arg>
+### tasks rm \<arg\>
 
 Remove a completed task where arg is the number of the task as seen from `tasks list`
 
